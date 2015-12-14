@@ -1,4 +1,10 @@
 {-# LANGUAGE BangPatterns #-}
+
+{-
+This solution is terrible. It takes minutes to run and uses several GBs of memory.
+Probably should've used a mutable array instead, or at least used a smarter algorithm.
+-}
+
 import qualified Data.Array as A
     
 type Coords = (Int, Int)
