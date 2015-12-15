@@ -27,9 +27,7 @@ recipes :: [Ingredient] -> [Recipe]
 recipes = go M.empty 0 where
     go recipe _ [] = [recipe]
     go recipe n (x:[]) = [M.insert x (100-n) recipe]
-    go recipe n (x:xs) = do
-                           i <- [0..(100-n)]
-                           go (M.insert x i recipe) (n+i) xs
+    go recipe n (x:xs) = [0..(100-n)] >>= \i -> go (M.insert x i recipe) (n+i) xs
 
 componentScore :: (Ingredient -> Int) -> Recipe -> Int
 componentScore f r = max 0 (M.foldlWithKey' componentFunc 0 r) where
@@ -42,18 +40,17 @@ recipeScore r = capacities * durabilities * flavors * textures where
     flavors = componentScore flavor r
     textures = componentScore texture r
 
-recipesWithScores :: [Ingredient] -> [(Recipe, Int)]
-recipesWithScores = annotate recipeScore . recipes
-
 sortByScore :: [(Recipe, Int)] -> [(Recipe, Int)]
 sortByScore = L.sortBy (\(_, x) (_, y) -> y `compare` x)
 
+bestRecipeWithFilter :: (Recipe -> Bool) -> [Ingredient] -> Maybe (Recipe, Int)
+bestRecipeWithFilter f = listToMaybe . sortByScore . annotate recipeScore . filter f . recipes
+                        
 bestRecipe :: [Ingredient] -> Maybe (Recipe, Int)
-bestRecipe = listToMaybe . sortByScore . recipesWithScores
+bestRecipe = bestRecipeWithFilter (const True)
 
 bestRecipeWithCalories :: Int -> [Ingredient] -> Maybe (Recipe, Int)
-bestRecipeWithCalories n =
-    listToMaybe . sortByScore . filter (\(r, _) -> componentScore calories r == n) . recipesWithScores
+bestRecipeWithCalories n = bestRecipeWithFilter (\r -> componentScore calories r == n)
 
 bestScore :: [Ingredient] -> Int
 bestScore is = case bestRecipe is of
