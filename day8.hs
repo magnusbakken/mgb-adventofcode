@@ -7,11 +7,7 @@ import Text.Parsec.Combinator
 
 data CharType = SingleChar | EscapedChar | EscapedHexSequence deriving (Eq, Show, Read)
 
-pString f g h = do
-  char '"'
-  result <- stringData f g h
-  char '"'
-  return result
+pString f g h = between (string "\"") (string "\"") (stringData f g h)
 
 stringData f g h = many (f <$> noneOf ['\\', '"'] <|> escapedChar g h)
 
@@ -21,7 +17,7 @@ hexEscape h = do
   char 'x'
   n1 <- hexDigit
   n2 <- hexDigit
-  let [(num, _)] = readHex [n1, n2]
+  let ((num, _):_) = readHex [n1, n2]
   return (h num)
 
 parseString :: (Char -> a) -> (Char -> a) -> (Int -> a) -> String -> [a]
