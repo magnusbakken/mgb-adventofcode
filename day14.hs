@@ -1,5 +1,6 @@
 import Control.Monad
-import Data.List (foldl', sortBy)
+import Data.List (foldl')
+import AdventOfCodeUtils (sortWith)
 
 type Speed = Int
 type Time = Int
@@ -61,17 +62,16 @@ simulateRace totalTime rs =
 simulateRace2 :: Time -> [Reindeer] -> [ReindeerPos]
 simulateRace2 totalTime rs =
     foldl' update (initialReindeerPositions rs) [1..totalTime] where
-        update rs _ = do
+        update rs _ =
           let allUpdated = map (\r -> updateReindeer r) rs
-          let leadingPosition = maximum (map position allUpdated)
-          updated <- allUpdated
-          return (addPointsIfLeading leadingPosition updated)
+              leadingPosition = maximum (map position allUpdated) in
+          addPointsIfLeading leadingPosition <$> allUpdated
 
 winningReindeer :: [ReindeerPos] -> ReindeerPos
-winningReindeer = head . sortBy (\r1 r2 -> position r2 `compare` position r1)
+winningReindeer = head . reverse . sortWith position
 
 winningReindeer2 :: [ReindeerPos] -> ReindeerPos
-winningReindeer2 = head . sortBy (\r1 r2 -> points r2 `compare` points r1)
+winningReindeer2 = head . reverse . sortWith points
 
 winningReindeerPosition :: Time -> [Reindeer] -> Position
 winningReindeerPosition totalTime rs = position (winningReindeer (simulateRace totalTime rs))

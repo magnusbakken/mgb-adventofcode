@@ -28,7 +28,10 @@ trueOfN target f = go 0 where
          continue = if target == n then True else go (succ n) xs
 
 hasDouble :: Eq a => [a] -> Bool
-hasDouble s = any (uncurry (==)) (zip s (drop 1 s))
+hasDouble s = any (uncurry (==)) (zip s (tail s))
+
+sortWith :: Ord b => (a -> b) -> [a] -> [a]
+sortWith f = L.sortBy (\x y -> f x `compare` f y)
 
 replaceIdx :: Int -> a -> [a] -> [a]
 replaceIdx n x l = take n l ++ [x] ++ drop (succ n) l
@@ -36,8 +39,8 @@ replaceIdx n x l = take n l ++ [x] ++ drop (succ n) l
 annotate :: (a -> b) -> [a] -> [(a, b)]
 annotate f = map (\x -> (x, f x))
 
-listsByLength :: [[a]] -> [[a]]
-listsByLength = L.sortBy (\x y -> length x `compare` length y)
+listsByLength :: Foldable t => [t a] -> [t a]
+listsByLength = sortWith length
 
 shortestLists :: [[a]] -> [[a]]
 shortestLists xs = case listsByLength xs of

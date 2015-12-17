@@ -5,73 +5,47 @@ import System.IO
 import Text.Parsec
 import Text.Parsec.Combinator
 
-pString = do
-  char '"'
-  result <- stringData
-  char '"'
-  return result
-
-stringData = many (noneOf ['\\', '"'] <|> escapedChar)
-
-escapedChar = do
-  char '\\'
-  choice [char '"', char '\\', hexEscape]
-
-hexEscape = do
-  char 'x'
-  n1 <- hexDigit
-  n2 <- hexDigit
-  let [(num, _)] = readHex [n1, n2]
-  return (chr num)
-
 data CharType = SingleChar | EscapedChar | EscapedHexSequence deriving (Eq, Show, Read)
 
-pStringN = do
+pString f g h = do
   char '"'
-  result <- stringDataN
+  result <- stringData f g h
   char '"'
   return result
 
-stringDataN = many (SingleChar <$ noneOf ['\\', '"'] <|> escapedCharN)
+stringData f g h = many (f <$> noneOf ['\\', '"'] <|> escapedChar g h)
 
-escapedCharN = do
-  char '\\'
-  choice [EscapedChar <$ char '"', EscapedChar <$ char '\\', hexEscapeN]
+escapedChar g h = char '\\' *> (choice [g <$> char '"', g <$> char '\\', hexEscape h])
 
-hexEscapeN = do
+hexEscape h = do
   char 'x'
   n1 <- hexDigit
   n2 <- hexDigit
   let [(num, _)] = readHex [n1, n2]
-  return EscapedHexSequence
+  return (h num)
 
-parseString :: String -> String
-parseString s = case parse pString ("ParseString: " ++ s) s of
-                  Left err -> error (show err)
-                  Right r -> r
-
-parseStringN :: String -> [CharType]
-parseStringN s = case parse pStringN ("ParseStringN: " ++ s) s of
-                   Left err -> error (show err)
-                   Right r -> r
+parseString :: (Char -> a) -> (Char -> a) -> (Int -> a) -> String -> [a]
+parseString f g h s = case parse (pString f g h) ("ParseString: " ++ s) s of
+                        Left err -> error (show err)
+                        Right r -> r
 
 countCode :: String -> Int
 countCode = length
 
-countChars :: String -> Int
-countChars = length . parseString
+countChars :: (Char -> a) -> (Char -> a) -> (Int -> a) -> String -> Int
+countChars f g h = length . parseString f g h
 
-countEncoded :: String -> Int
-countEncoded s = 6 + sum (map nValue (parseStringN s)) where
+countEncoded :: (Char -> CharType) -> (Char -> CharType) -> (Int -> CharType) -> String -> Int
+countEncoded f g h s = 6 + sum (map nValue (parseString f g h s)) where
     nValue SingleChar = 1
     nValue EscapedChar = 4
     nValue EscapedHexSequence = 5
 
 countDiff :: String -> Int
-countDiff s = countCode s - countChars s
+countDiff s = countCode s - countChars id id chr s
 
 countDiff2 :: String -> Int
-countDiff2 s = countEncoded s - countCode s
+countDiff2 s = countEncoded (const SingleChar) (const EscapedChar) (const EscapedHexSequence) s - countCode s
 
 readInput :: IO [String]
 readInput = fmap lines (readFile "day8.txt")

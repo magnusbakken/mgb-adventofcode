@@ -4,7 +4,7 @@ import qualified Data.List as L
 import Data.Maybe
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
-import Debug.Trace
+import AdventOfCodeUtils (sortWith)
 
 type Node = String
 type Edge = (Node, Node)
@@ -102,7 +102,7 @@ allJourneysWithCosts :: Graph -> [(Journey, Cost)]
 allJourneysWithCosts graph = map (\j -> (j, journeyCost graph j)) (allJourneys graph)
 
 bestJourney :: Graph -> Maybe (Journey, Cost)
-bestJourney = listToMaybe . L.sortBy (\(_, x) (_, y) -> x `compare` y) . allJourneysWithCosts
+bestJourney = listToMaybe . sortWith snd . allJourneysWithCosts
 
 bestJourneyCost :: Graph -> Cost
 bestJourneyCost graph = case bestJourney graph of
@@ -110,7 +110,7 @@ bestJourneyCost graph = case bestJourney graph of
                           Just (_, cost) -> cost
 
 worstJourney :: Graph -> Maybe (Journey, Cost)
-worstJourney = listToMaybe . L.sortBy (\(_, x) (_, y) -> y `compare` x) . allJourneysWithCosts
+worstJourney = listToMaybe . reverse . sortWith snd . allJourneysWithCosts
 
 worstJourneyCost :: Graph -> Cost
 worstJourneyCost graph = case worstJourney graph of
