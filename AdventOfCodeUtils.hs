@@ -36,13 +36,8 @@ replaceIdx n x l = take n l ++ [x] ++ drop (succ n) l
 annotate :: (a -> b) -> [a] -> [(a, b)]
 annotate f = map (\x -> (x, f x))
 
-takeWhile2 :: (a -> a -> Bool) -> [a] -> [a]
-takeWhile2 _ [] = []
-takeWhile2 f xs = map fst (filter (uncurry f) (zip xs (tail xs)))
-
 listsByLength :: [[a]] -> [[a]]
-listsByLength = map fst . L.sortBy cmp . annotate length where
-    cmp (_, t1) (_, t2) = t1 `compare` t2
+listsByLength = L.sortBy (\x y -> length x `compare` length y)
 
 shortestLists :: [[a]] -> [[a]]
 shortestLists xs = case listsByLength xs of
