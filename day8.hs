@@ -32,20 +32,21 @@ parseString f g h s = case parse (pString f g h) ("ParseString: " ++ s) s of
 countCode :: String -> Int
 countCode = length
 
-countChars :: (Char -> a) -> (Char -> a) -> (Int -> a) -> String -> Int
-countChars f g h = length . parseString f g h
+countChars :: String -> Int
+countChars = length . parseString id id chr
 
-countEncoded :: (Char -> CharType) -> (Char -> CharType) -> (Int -> CharType) -> String -> Int
-countEncoded f g h s = 6 + sum (map nValue (parseString f g h s)) where
+countEncoded :: String -> Int
+countEncoded s = 6 + sum (map nValue (parse s)) where
+    parse = parseString (const SingleChar) (const EscapedChar) (const EscapedHexSequence)
     nValue SingleChar = 1
     nValue EscapedChar = 4
     nValue EscapedHexSequence = 5
 
 countDiff :: String -> Int
-countDiff s = countCode s - countChars id id chr s
+countDiff s = countCode s - countChars s
 
 countDiff2 :: String -> Int
-countDiff2 s = countEncoded (const SingleChar) (const EscapedChar) (const EscapedHexSequence) s - countCode s
+countDiff2 s = countEncoded s - countCode s
 
 readInput :: IO [String]
 readInput = fmap lines (readFile "day8.txt")
