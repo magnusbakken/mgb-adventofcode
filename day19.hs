@@ -1,38 +1,12 @@
 import qualified Data.Array as A
 import System.IO (readFile)
+import AdventOfCodeUtils (neighborsWithin)
 
 type Coords = (Int, Int)
 type Lights = A.Array Coords Bool
 
 isLightOn :: Lights -> Coords -> Bool
 isLightOn = (A.!)
-
-neighbors :: (Coords, Coords) -> Coords -> [Coords]
-neighbors ((minX, minY), (maxX, maxY)) (x, y) = above ++ left ++ below ++ right where
-    above
-        | atTop = []
-        | atLeft = [c2, c3]
-        | atRight = [c1, c2]
-        | otherwise = [c1, c2, c3]
-    left = if atLeft then [] else [c4]
-    below
-        | atBottom = []
-        | atLeft = [c7, c8]
-        | atRight = [c6, c7]
-        | otherwise = [c6, c7, c8]
-    right = if atRight then [] else [c5]
-    atTop = y == minY
-    atBottom = y == maxY
-    atLeft = x == minX
-    atRight = x == maxX
-    c1 = (pred x, pred y)
-    c2 = (x, pred y)
-    c3 = (succ x, pred y)
-    c4 = (pred x, y)
-    c5 = (succ x, y)
-    c6 = (pred x, succ y)
-    c7 = (x, succ y)
-    c8 = (succ x, succ y)
 
 corners :: (Coords, Coords) -> [Coords]
 corners ((minX, minY), (maxX, maxY)) =
@@ -43,7 +17,7 @@ isCorner bounds coords = coords `elem` corners bounds
       
 countLiveNeighbors :: Lights -> Coords -> Int
 countLiveNeighbors lights coords =
-    length (filter (isLightOn lights) (neighbors (A.bounds lights) coords))
+    length (filter (isLightOn lights) (neighborsWithin (A.bounds lights) coords))
 
 shouldLightBeOn :: Lights -> Coords -> Bool -> Bool
 shouldLightBeOn lights coords isOnNow =

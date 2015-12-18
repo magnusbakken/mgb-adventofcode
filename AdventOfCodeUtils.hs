@@ -1,5 +1,6 @@
 module AdventOfCodeUtils where
 
+import Control.Applicative
 import qualified Data.List as L
                 
 smallestTwo :: Ord a => a -> a -> a -> (a, a)
@@ -46,3 +47,11 @@ shortestLists :: [[a]] -> [[a]]
 shortestLists xs = case listsByLength xs of
                      [] -> []
                      (x:xs) -> x : takeWhile (\y -> length y == length x) xs
+
+neighbors :: (Enum a, Eq a) => (a, a) -> [(a, a)]
+neighbors (x, y) = filter (/= (x, y)) combos where
+    combos = [pred, id, succ] >>= \f1 -> [pred, id, succ] >>= \f2 -> return (f1 x, f2 y)
+
+neighborsWithin :: (Ord a, Enum a, Eq a) => ((a, a), (a, a)) -> (a, a) -> [(a, a)]
+neighborsWithin ((minX, minY), (maxX, maxY)) coords = filter within (neighbors coords) where
+    within (x, y) = x >= minX && x <= maxX && y >= minY && y <= maxY
