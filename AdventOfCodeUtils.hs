@@ -1,12 +1,16 @@
 module AdventOfCodeUtils where
 
 import Control.Applicative
+import Data.Function (on)
 import qualified Data.List as L
                 
 smallestTwo :: Ord a => a -> a -> a -> (a, a)
 smallestTwo a b c
     | a >= b = (b, min a c)
     | otherwise = (a, min b c)
+
+tupleToList2 :: (a, a) -> [a]
+tupleToList2 (a, b) = [a, b]
 
 listToTuple2 :: [a] -> (a, a)
 listToTuple2 ([a, b]) = (a, b)
@@ -26,13 +30,13 @@ trueOfN target f = go 0 where
        | f x = continue
        | otherwise = go n xs
        where
-         continue = if target == n then True else go (succ n) xs
+         continue = target == n || go (succ n) xs
 
 hasDouble :: Eq a => [a] -> Bool
 hasDouble s = any (uncurry (==)) (zip s (tail s))
 
 sortWith :: Ord b => (a -> b) -> [a] -> [a]
-sortWith f = L.sortBy (\x y -> f x `compare` f y)
+sortWith f = L.sortBy (compare `on` f)
 
 replaceIdx :: Int -> a -> [a] -> [a]
 replaceIdx n x l = take n l ++ [x] ++ drop (succ n) l

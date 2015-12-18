@@ -1,0 +1,215 @@
+./AdventOfCodeUtils.hs:29:21: Error: Redundant if
+Found:
+  if target == n then True else go (succ n) xs
+Why not:
+  (target == n) || go (succ n) xs
+
+./AdventOfCodeUtils.hs:35:24: Warning: Use on
+Found:
+  \ x y -> f x `compare` f y
+Why not:
+  compare `Data.Function.on` f
+
+./day11.hs:30:21: Warning: Use list literal pattern
+Found:
+  ('z' : [])
+Why not:
+  ['z']
+
+./day11.hs:31:21: Warning: Use list literal pattern
+Found:
+  (c : [])
+Why not:
+  [c]
+
+./day11.hs:36:1: Error: Eta reduce
+Found:
+  nextConceivable s = go s
+Why not:
+  nextConceivable = go
+
+./day13.hs:98:10: Warning: Use list literal pattern
+Found:
+  (_ : [])
+Why not:
+  [_]
+
+./day13.hs:113:19: Error: Avoid reverse
+Found:
+  reverse $
+    L.sort $ map (\ x -> (totalHappiness pref x, x)) (seatings persons)
+Why not:
+  sortBy (flip compare)
+    (map (\ x -> (totalHappiness pref x, x)) (seatings persons))
+
+./day14.hs:66:33: Error: Avoid lambda
+Found:
+  \ r -> updateReindeer r
+Why not:
+  updateReindeer
+
+./day14.hs:71:19: Error: Use last
+Found:
+  head . reverse . sortWith position
+Why not:
+  last . sortWith position
+
+./day14.hs:74:20: Error: Use last
+Found:
+  head . reverse . sortWith points
+Why not:
+  last . sortWith points
+
+./day15.hs:29:17: Warning: Use list literal pattern
+Found:
+  (x : [])
+Why not:
+  [x]
+
+./day2.hs:1007:15: Warning: Use map once
+Found:
+  map (\ [l, w, h] -> (read l, read w, read h))
+    (map (splitOn "x") presents)
+Why not:
+  map ((\ [l, w, h] -> (read l, read w, read h)) . splitOn "x")
+    presents
+
+./day3.hs:37:17: Warning: Redundant bracket
+Found:
+  (S.insert rloc (S.insert sloc seen))
+Why not:
+  S.insert rloc (S.insert sloc seen)
+
+./day6.hs:328:10: Warning: Use second
+Found:
+  \ (i, e) -> (i, f e)
+Why not:
+  Control.Arrow.second f
+
+./day6.hs:376:14: Warning: Redundant bracket
+Found:
+  "Instruction: " ++ (show (i, from, to))
+Why not:
+  "Instruction: " ++ show (i, from, to)
+
+./day6.hs:383:14: Warning: Redundant bracket
+Found:
+  "Instruction: " ++ (show (i, from, to))
+Why not:
+  "Instruction: " ++ show (i, from, to)
+
+./day7.hs:1:1: Error: Unused LANGUAGE pragma
+Found:
+  {-# LANGUAGE ViewPatterns #-}
+Why not remove it.
+
+./day7.hs:365:1: Error: Eta reduce
+Found:
+  makeStore1 source target = Store (WireInput source) target
+Why not:
+  makeStore1 source = Store (WireInput source)
+
+./day7.hs:368:1: Error: Eta reduce
+Found:
+  makeStore2 source target = Store (ConstInput source) target
+Why not:
+  makeStore2 source = Store (ConstInput source)
+
+./day7.hs:371:1: Error: Eta reduce
+Found:
+  makeAnd1 source1 source2 target
+    = And (WireInput source1) (WireInput source2) target
+Why not:
+  makeAnd1 source1 source2
+    = And (WireInput source1) (WireInput source2)
+
+./day7.hs:374:1: Error: Eta reduce
+Found:
+  makeAnd2 source1 source2 target
+    = And (ConstInput source1) (WireInput source2) target
+Why not:
+  makeAnd2 source1 source2
+    = And (ConstInput source1) (WireInput source2)
+
+./day7.hs:377:1: Error: Eta reduce
+Found:
+  makeOr1 source1 source2 target
+    = Or (WireInput source1) (WireInput source2) target
+Why not:
+  makeOr1 source1 source2
+    = Or (WireInput source1) (WireInput source2)
+
+./day7.hs:380:1: Error: Eta reduce
+Found:
+  makeLeftShift1 source1 source2 target
+    = LeftShift (WireInput source1) source2 target
+Why not:
+  makeLeftShift1 source1 = LeftShift (WireInput source1)
+
+./day7.hs:383:1: Error: Eta reduce
+Found:
+  makeRightShift1 source1 source2 target
+    = RightShift (WireInput source1) source2 target
+Why not:
+  makeRightShift1 source1 = RightShift (WireInput source1)
+
+./day7.hs:386:1: Error: Eta reduce
+Found:
+  makeNot1 source target = Not (WireInput source) target
+Why not:
+  makeNot1 source = Not (WireInput source)
+
+./day7.hs:427:1: Error: Eta reduce
+Found:
+  wireAnd wires source1 source2
+    = wireBinOp (.&.) wires source1 source2
+Why not:
+  wireAnd = wireBinOp (.&.)
+
+./day7.hs:430:1: Error: Eta reduce
+Found:
+  wireOr wires source1 source2
+    = wireBinOp (.|.) wires source1 source2
+Why not:
+  wireOr = wireBinOp (.|.)
+
+./day7.hs:436:37: Warning: Avoid lambda
+Found:
+  \ v -> shift v n
+Why not:
+  (`shift` n)
+
+./day7.hs:439:38: Warning: Avoid lambda
+Found:
+  \ v -> shiftR v n
+Why not:
+  (`shiftR` n)
+
+./day7.hs:446:5: Warning: Use fromMaybe
+Found:
+  case wireGet wires "a" of
+      Nothing -> error "Wire a not found"
+      Just x -> x
+Why not:
+  fromMaybe (error "Wire a not found") (wireGet wires "a")
+
+./day8.hs:12:39: Warning: Use string literal
+Found:
+  ['\\', '"']
+Why not:
+  "\\\""
+
+./day8.hs:14:19: Warning: Redundant bracket
+Found:
+  char '\\' *>
+    (choice [g <$> char '"', g <$> char '\\', hexEscape h])
+Why not:
+  char '\\' *> choice [g <$> char '"', g <$> char '\\', hexEscape h]
+
+./day9.hs:54:48: Error: Use concatMap
+Found:
+  concat $ map (\ (from, to) -> [from, to]) (M.keys graph)
+Why not:
+  concatMap (\ (from, to) -> [from, to]) (M.keys graph)
+
+33 suggestions

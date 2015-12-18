@@ -11,7 +11,7 @@ pString f g h = between (string "\"") (string "\"") (stringData f g h)
 
 stringData f g h = many (f <$> noneOf ['\\', '"'] <|> escapedChar g h)
 
-escapedChar g h = char '\\' *> (choice [g <$> char '"', g <$> char '\\', hexEscape h])
+escapedChar g h = char '\\' *> choice [g <$> char '"', g <$> char '\\', hexEscape h]
 
 hexEscape h = do
   char 'x'

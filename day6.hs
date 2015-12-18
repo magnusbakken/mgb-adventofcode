@@ -5,6 +5,7 @@ This solution is terrible. It takes minutes to run and uses several GBs of memor
 Probably should've used a mutable array instead, or at least used a smarter algorithm.
 -}
 
+import Control.Arrow (second)
 import qualified Data.Array as A
     
 type Coords = (Int, Int)
@@ -325,7 +326,7 @@ createDimmableLights (x, y) = A.array ((0, 0), (x, y)) [((x_, y_), 0) | x_ <- [0
 
 lightChanges :: (a -> a) -> [(Coords, a)] -> Coords -> Coords -> [(Coords, a)]
 lightChanges f !lights from to =
-    map (\(i, e) -> (i, f e)) (filter (\(i, _) -> isInRange i from to) lights)
+    map (second f) (filter (\(i, _) -> isInRange i from to) lights)
 
 isInRange :: Coords -> Coords -> Coords -> Bool
 isInRange (x, y) (xf, yf) (xt, yt) = x >= xf && x <= xt && y >= yf && y <= yt
@@ -373,14 +374,14 @@ runInstructions :: Lights -> InstructionList -> IO Lights
 runInstructions lights [] = return lights
 runInstructions lights ((i, from, to):is) = do
   next <- runInstruction i lights from to
-  putStrLn $ "Instruction: " ++ (show (i, from, to))
+  putStrLn $ "Instruction: " ++ show (i, from, to)
   runInstructions next is
                  
 runDimmableInstructions :: DimmableLights -> InstructionList -> IO DimmableLights
 runDimmableInstructions lights [] = return lights
 runDimmableInstructions lights ((i, from, to):is) = do
   next <- runDimmableInstruction i lights from to
-  putStrLn $ "Instruction: " ++ (show (i, from, to))
+  putStrLn $ "Instruction: " ++ show (i, from, to)
   runDimmableInstructions next is
 
 main :: IO ()

@@ -95,7 +95,7 @@ affinity pref pairing = fromMaybe 0 (M.lookup pairing pref)
 
 pairings :: Seating -> [Pairing]
 pairings [] = []
-pairings (_:[]) = []
+pairings [_] = []
 pairings (first:rest) = duplicateAll (go first rest) where
     go curr [] = [(curr, first)]
     go curr (next:xs) = (curr, next) : go next xs
@@ -110,7 +110,7 @@ seatings = L.permutations
 
 bestSeating :: Preferences -> [Person] -> Maybe (Happiness, Seating)
 bestSeating pref persons =
-    listToMaybe $ reverse $ L.sort $ map (\x -> (totalHappiness pref x, x)) (seatings persons)
+    listToMaybe $ L.sortBy (flip compare) $ map (\x -> (totalHappiness pref x, x)) (seatings persons)
 
 bestHappiness :: Preferences -> [Person] -> Happiness
 bestHappiness pref persons =

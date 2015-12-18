@@ -63,15 +63,15 @@ simulateRace2 :: Time -> [Reindeer] -> [ReindeerPos]
 simulateRace2 totalTime rs =
     foldl' update (initialReindeerPositions rs) [1..totalTime] where
         update rs _ =
-          let allUpdated = map (\r -> updateReindeer r) rs
+          let allUpdated = map updateReindeer rs
               leadingPosition = maximum (map position allUpdated) in
           addPointsIfLeading leadingPosition <$> allUpdated
 
 winningReindeer :: [ReindeerPos] -> ReindeerPos
-winningReindeer = head . reverse . sortWith position
+winningReindeer = last . sortWith position
 
 winningReindeer2 :: [ReindeerPos] -> ReindeerPos
-winningReindeer2 = head . reverse . sortWith points
+winningReindeer2 = last . sortWith points
 
 winningReindeerPosition :: Time -> [Reindeer] -> Position
 winningReindeerPosition totalTime rs = position (winningReindeer (simulateRace totalTime rs))

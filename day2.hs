@@ -1,5 +1,5 @@
 import Data.List.Split
-import AdventOfCodeUtils (smallestTwo)
+import AdventOfCodeUtils (listToTuple3, smallestTwo)
 
 presents = [
  "29x13x26",
@@ -1004,7 +1004,7 @@ presents = [
  "10x9x8"]
 
 presentList :: [(Int, Int, Int)]
-presentList = map (\[l,w,h] -> (read l, read w, read h)) (map (splitOn "x") presents)
+presentList = map (listToTuple3 . map read . splitOn "x") presents
        
 boxArea :: Num n => n -> n -> n -> n
 boxArea l w h = 2*l*w + 2*w*h + 2*h*l

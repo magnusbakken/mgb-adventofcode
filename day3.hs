@@ -34,7 +34,7 @@ countHousesDouble ds = 1 + go ds ((0,0), (0,0)) (S.insert (0,0) S.empty) where
     go ((s,r):ds) (sloc,rloc) seen = countNew + go ds newCoords newSeen where
       countNew = added seen sloc rloc
       newCoords = (newLocation s sloc, newLocation r rloc)
-      newSeen = (S.insert rloc (S.insert sloc seen))
+      newSeen = S.insert rloc (S.insert sloc seen)
     added seen sloc rloc =
         fromEnum (sloc `S.notMember` seen) + fromEnum (rloc `S.notMember` seen)
 

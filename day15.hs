@@ -26,7 +26,7 @@ input = [Ingredient "Sprinkles" 2 0 (-2) 0 3,
 recipes :: [Ingredient] -> [Recipe]
 recipes = go M.empty 0 where
     go recipe _ [] = [recipe]
-    go recipe n (x:[]) = [M.insert x (100-n) recipe]
+    go recipe n [x] = [M.insert x (100-n) recipe]
     go recipe n (x:xs) = [0..(100-n)] >>= \i -> go (M.insert x i recipe) (n+i) xs
 
 componentScore :: (Ingredient -> Int) -> Recipe -> Int

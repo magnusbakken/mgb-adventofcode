@@ -1,4 +1,3 @@
-{-# LANGUAGE ViewPatterns #-}
 import Control.Applicative
 import Data.Bits
 import qualified Data.Map.Strict as M
@@ -362,28 +361,28 @@ input = [makeAnd1 "af" "ah" "ai",
     makeRightShift1 "as" 2 "at"]
 
 makeStore1 :: String -> String -> Instruction
-makeStore1 source target = Store (WireInput source) target
+makeStore1 source = Store (WireInput source)
 
 makeStore2 :: Word16 -> String -> Instruction
-makeStore2 source target = Store (ConstInput source) target
+makeStore2 source = Store (ConstInput source)
 
 makeAnd1 :: String -> String -> String -> Instruction
-makeAnd1 source1 source2 target = And (WireInput source1) (WireInput source2) target
+makeAnd1 source1 source2 = And (WireInput source1) (WireInput source2)
 
 makeAnd2 :: Word16 -> String -> String -> Instruction
-makeAnd2 source1 source2 target = And (ConstInput source1) (WireInput source2) target
+makeAnd2 source1 source2 = And (ConstInput source1) (WireInput source2)
 
 makeOr1 :: String -> String -> String -> Instruction
-makeOr1 source1 source2 target = Or (WireInput source1) (WireInput source2) target
+makeOr1 source1 source2 = Or (WireInput source1) (WireInput source2)
 
 makeLeftShift1 :: String -> Int -> String -> Instruction
-makeLeftShift1 source1 source2 target = LeftShift (WireInput source1) source2 target
+makeLeftShift1 source1 = LeftShift (WireInput source1) 
 
 makeRightShift1 :: String -> Int -> String -> Instruction
-makeRightShift1 source1 source2 target = RightShift (WireInput source1) source2 target
+makeRightShift1 source1 = RightShift (WireInput source1)
 
 makeNot1 :: String -> String -> Instruction
-makeNot1 source target = Not (WireInput source) target
+makeNot1 source = Not (WireInput source)
 
 addSignal :: Wires -> Wire -> Maybe Word16 -> Maybe Wires
 addSignal _ _ Nothing = Nothing
@@ -421,31 +420,28 @@ inputValue _ (ConstInput value) = Just value
 inputValue wires (WireInput wire) = wireGet wires wire
 
 wireGet :: Wires -> Wire -> Maybe Word16
-wireGet wires wire = M.lookup wire wires
+wireGet = flip M.lookup
 
 wireAnd :: Wires -> Input -> Input -> Maybe Word16
-wireAnd wires source1 source2 = wireBinOp (.&.) wires source1 source2
+wireAnd = wireBinOp (.&.)
 
 wireOr :: Wires -> Input -> Input -> Maybe Word16
-wireOr wires source1 source2 = wireBinOp (.|.) wires source1 source2
+wireOr = wireBinOp (.|.)
 
 wireBinOp :: (Word16 -> Word16 -> Word16) -> Wires -> Input -> Input -> Maybe Word16
 wireBinOp f wires input1 input2 = f <$> inputValue wires input1 <*> inputValue wires input2
 
 wireLeftShift :: Wires -> Input -> Int -> Maybe Word16
-wireLeftShift wires input n = fmap (\v -> shift v n) (inputValue wires input)
+wireLeftShift wires input n = fmap (`shift` n) (inputValue wires input)
 
 wireRightShift :: Wires -> Input -> Int -> Maybe Word16
-wireRightShift wires input n = fmap (\v -> shiftR v n) (inputValue wires input)
+wireRightShift wires input n = fmap (`shiftR` n) (inputValue wires input)
 
 wireNot :: Wires -> Input -> Maybe Word16
 wireNot wires input = fmap complement (inputValue wires input)
 
 valueOfA :: Wires -> Word16
-valueOfA wires =
-    case wireGet wires "a" of
-      Nothing -> error "Wire a not found"
-      Just x -> x
+valueOfA wires = fromMaybe (error "Wire a not found") (wireGet wires "a")
 
 replaceB :: Word16 -> [Instruction]
 replaceB newB = replaceIdx 89 (makeStore2 newB "b") input

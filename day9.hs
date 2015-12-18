@@ -4,7 +4,7 @@ import qualified Data.List as L
 import Data.Maybe
 import qualified Data.Map.Strict as M
 import qualified Data.Set as S
-import AdventOfCodeUtils (sortWith)
+import AdventOfCodeUtils (sortWith, tupleToList2)
 
 type Node = String
 type Edge = (Node, Node)
@@ -51,7 +51,7 @@ exampleGraph = M.fromList [londonToDublin, londonToBelfast, dublinToBelfast] whe
     dublinToBelfast = (("Dublin", "Belfast"), 141)
 
 allNodes :: Graph -> [Node]
-allNodes graph = map head $ L.group $ L.sort $ concat $ map (\(from, to) -> [from, to]) (M.keys graph)
+allNodes graph = map head $ L.group $ L.sort (M.keys graph >>= tupleToList2)
 
 endsAt :: Node -> Edge -> Bool
 endsAt node (_, to) = node == to

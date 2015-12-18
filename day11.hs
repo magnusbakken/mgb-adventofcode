@@ -27,17 +27,16 @@ isPasswordValid s = hasThreeStraight s && not (hasInvalidLetters s) && hasNPairs
 incrementPassword :: String -> String
 incrementPassword s = reverse (incrementString (reverse s)) where
     incrementString [] = error "Empty string"
-    incrementString ('z':[]) = error "Final possible password reached"
-    incrementString (c:[]) = [succ c]
+    incrementString "z" = error "Final possible password reached"
+    incrementString [c] = [succ c]
     incrementString ('z':cs) = 'a' : incrementString cs
     incrementString (c:cs) = succ c : cs
 
 nextConceivable :: String -> String
-nextConceivable s = go s where
-    go [] = []
-    go (c:cs)
-       | c `elem` "iol" = succ c : replicate (length cs) 'a'
-       | otherwise = c : nextConceivable cs
+nextConceivable [] = []
+nextConceivable (c:cs)
+    | c `elem` "iol" = succ c : replicate (length cs) 'a'
+    | otherwise = c : nextConceivable cs
 
 nextPassword :: String -> String
 nextPassword s = until isPasswordValid (incrementPassword . nextConceivable) (incrementPassword (nextConceivable s))
